@@ -54,5 +54,7 @@ namespace StringManipulation
             };
         }
 
+        private Product myShop = new Shop();
+
     }
 }
