@@ -1,60 +1,41 @@
-﻿using System.ComponentModel.Design;
-using Labb2F2;
+﻿using Labb2F2;
 
-namespace StringManipulation
+public class Program
 {
-    class Program
+    static void Main(string[] args)
     {
-        static void Main(string[] args)
-        {
-            PopulateCustomer();
-            bool showMenu = true;
-            while (showMenu)
-            {
-                showMenu = MainMenu();
-                //break;
-            }
+        MainMenu();
+    }
 
-        }
-
-        private static bool MainMenu()
+    public static void MainMenu()
+    {
+        bool showMenu = true;
+        while (showMenu)
         {
             Console.Clear();
-            Console.WriteLine("Choose an option:");
-            Console.WriteLine("1) Register new customer");
-            Console.WriteLine("2) Log in");
+            Console.WriteLine("-----------------------------------");
+            Console.WriteLine("*** Welcome to my shopping store! ***");
+            Console.WriteLine("-----------------------------------");
+            Console.WriteLine("1) Register a new customer");
+            Console.WriteLine("2) Sign in");
             Console.WriteLine("3) Exit");
             Console.Write("\r\nSelect an option: ");
 
             switch (Console.ReadLine())
             {
                 case "1":
-                    Customer.RegisterNewCustomer();
-                    return true;
-                    
+                    ShoppingStore.RegisterNewCustomer();
+                    showMenu = false;
+                    break;
                 case "2":
-                    Customer.SignIn();
-                    return true;
-                    
+                    ShoppingStore.SignIn();
+                    showMenu = false;
+                    break;
                 case "3":
-                    return false;
-                    
-                default:
-                    return true;
+                    Environment.Exit(0);
+                    break;
             }
         }
-
-        public static void PopulateCustomer()
-        {
-            var arrCustomer = new Customer[]
-            {
-                new Customer("name1","password1"),
-                new Customer("name2","password2"),
-                new Customer("name3","password3")
-            };
-        }
-
-        private Product myShop = new Shop();
-
     }
+
 }

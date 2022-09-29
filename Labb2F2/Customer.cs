@@ -4,116 +4,96 @@ using System.Linq;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
-using StringManipulation;
+using Newtonsoft.Json;
 
 namespace Labb2F2
 {
     public class Customer
     {
-        public string Name { get; private set; }
-        private string Password { get; set; }
-
+        public string Username { get; private set; }
+        public string Password { get; set; }
+        public Enums.CustomerLevelType CustomerLevelType { get; set; }
         public List<Product> Cart { get; set; }
 
-        public Customer(string name, string password)
+        public Customer(string username, string password, List<Product> cart, Enums.CustomerLevelType customerLevelType)
         {
-            Name = name;
+            Username = username;
             Password = password;
-            Cart = new List<Product>();
+            Cart = cart;
+            CustomerLevelType = customerLevelType;
         }
 
-        public static void RegisterNewCustomer()
+        public static void SaveCustomerToTxt(Customer customer)
         {
-            Console.Clear();
-            Console.WriteLine("***Register a new customer***");
-            //Console.WriteLine("Write your name: ");
-            //string name = Console.ReadLine();
+            using FileStream fileStream = File.Open("CustomerDetails.txt", FileMode.Append);
+            fileStream.Close();
 
+            string json = File.ReadAllText("CustomerDetails.txt");
 
-            //Console.WriteLine("Write a new password: ");
-            //string password = Console.ReadLine();
-            Console.WriteLine("Enter your username:");
-            var username = Console.ReadLine();
-
-            Console.WriteLine("Enter your password:");
-            var password = Console.ReadLine();
-
-
-            Console.WriteLine("Congratulations! You are now a customer to us. Click enter to continue");
-
-            MainMenu2();
-
-        }
-
-        public static SecureString SignIn()
-        {
-            Console.Clear();
-            Console.WriteLine("Write your name: ");
-            string name = Console.ReadLine();
-
-            Console.WriteLine("Write you password: ");
-            SecureString password = new SecureString();
-            ConsoleKeyInfo keyInfo;
-
-            do
+            if (json == "")
             {
-                keyInfo = Console.ReadKey(true);
-                if (!char.IsControl(keyInfo.KeyChar))
-                {
-                    password.AppendChar(keyInfo.KeyChar);
-                    Console.Write("*");
-                }
-            } 
-            while (keyInfo.Key != ConsoleKey.Enter);
-            {
-                return password;
+                List<Customer> customerJson = new List<Customer>();
+                customerJson.Add(new Customer(customer.Username, customer.Password, customer.Cart, customer.CustomerLevelType));
+                var convertedJson = JsonConvert.SerializeObject(customerJson, Formatting.Indented);
 
+                System.IO.File.WriteAllText("CustomerDetails.txt", convertedJson);
             }
+            else if (json != "")
+            {
+                var customerJson = JsonConvert.DeserializeObject<List<Customer>>(json);
+                customerJson?.Add(new Customer(customer.Username, customer.Password, customer.Cart, customer.CustomerLevelType));
+                var convertedJson = JsonConvert.SerializeObject(customerJson, Formatting.Indented);
+
+                System.IO.File.WriteAllText("CustomerDetails.txt", convertedJson);
+            }
+        }
+
+        public static void SaveProductToTxt(Customer customer)
+        {
+            string json = File.ReadAllText("CustomerDetails.txt");
+            var customerJson = JsonConvert.DeserializeObject<List<Customer>>(json);
+
+            var cus = customerJson.FirstOrDefault(x => x.Username == customer.Username);
+            cus.Cart = customer.Cart;
+
+            var convertedJson = JsonConvert.SerializeObject(customerJson, Formatting.Indented);
+
+            System.IO.File.WriteAllText("CustomerDetails.txt", convertedJson);
+        }
+
+
+        public static void DeleteAllProductFromCartTxt(Customer customer)
+        {
+            string json = File.ReadAllText("CustomerDetails.txt");
+            var customerJson = JsonConvert.DeserializeObject<List<Customer>>(json);
+
+            var cus = customerJson.FirstOrDefault(x => x.Username == customer.Username);
+            cus.Cart = new List<Product>();
+            var convertedJson = JsonConvert.SerializeObject(customerJson, Formatting.Indented);
+
+            System.IO.File.WriteAllText("CustomerDetails.txt", convertedJson);
+        }
+
+        public static List<Customer> GetCustomersFromTxt()
+        {
+            var json = File.ReadAllText("CustomerDetails.txt");
+            var customerJson = JsonConvert.DeserializeObject<List<Customer>>(json);
+
+            return customerJson;
+        }
+
+        public static Customer GetCustomerFromTxt(Customer customer)
+        {
+            var json = File.ReadAllText("CustomerDetails.txt");
+            var customerJson = JsonConvert.DeserializeObject<List<Customer>>(json);
+            var cus = customerJson.FirstOrDefault(x => x.Username == customer.Username);
             
-            MainMenu2();
-
+            return cus;
         }
 
-        
-
-        public static void Main2(string[] args)
+        public override string ToString()
         {
-            bool showMenu2 = true;
-            while (showMenu2)
-            {
-                showMenu2 = MainMenu2();
-            }
+            return Username.ToString() + Password.ToString() + Cart.ToString();
         }
-        public static bool MainMenu2()
-        {
-            Console.Clear();
-            Console.WriteLine("Choose an option: ");
-            Console.WriteLine("1) Shopping");
-            Console.WriteLine("2) Shopping cart");
-            Console.WriteLine("3) Check out");
-            Console.WriteLine("4) Exit");
-
-
-            Console.Write("\r\nSelect an option: ");
-
-            switch (Console.ReadLine())
-            {
-                case "1":
-                    //Shopping.Product();
-                    return true;
-                case "2":
-                    //ShoppingCart.SelectedProduct();
-                    return true;
-                    //case "3":
-                    //    CheckOut...
-                    return true;
-                case "4":
-                    return false;
-                default:
-                    return true;
-            }
-        }
-
-
     }
 }
