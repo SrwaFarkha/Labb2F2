@@ -12,21 +12,13 @@ namespace Labb2F2
 {
     public class ShoppingStore
     {
-        public static Enums.CurrencyType Currency { get; set; }
+        public static Enums.CurrencyType Currency { get; set; } 
 
         public static void ShoppingStoreMain(Customer customer)
         {
-            bool showStoreMenu = true;
-            while (showStoreMenu)
+            while (true)
             {
-                showStoreMenu = ShoppingStoreMenu(customer);
-                break;
-            }
-        }
-
-        public static bool ShoppingStoreMenu(Customer customer)
-        {
-            Console.Clear();
+                Console.Clear();
             Console.WriteLine("-----------------------------------");
             Console.WriteLine("*** Shopping store main menu ***");
             Console.WriteLine("-----------------------------------");
@@ -35,28 +27,29 @@ namespace Labb2F2
             Console.WriteLine("3) Check out");
             Console.WriteLine("4) Sign out");
 
-            Console.Write("\r\nSelect an option: ");
+            Console.Write("\nSelect an option: ");
 
             switch (Console.ReadLine())
             {
                 case "1":
                     StartShopping(customer);
-                    return true;
-                case "2":
+                    break;
+                    case "2":
                     ShowShoppingCart(customer);
-                    return false;
+                    break;
                 case "3":
                     CheckOut(customer);
-                    return true;
+                    break;
                 case "4":
                     Program.MainMenu();
-                    return false;
-                default:
-                    return true;
+                    break;
+
+                }
             }
+            
         }
 
-        public static void RegisterNewCustomer()
+        public static void RegisterNewCustomer()//metod för att registrera ny kund
         {
             Console.Clear();
             Console.WriteLine("-----------------------------------");
@@ -72,8 +65,8 @@ namespace Labb2F2
             Console.Write("Default, Bronze, Silver or Gold: ");
             string inputCustomerType = Console.ReadLine().ToLower();
 
-            var customerType = Enums.CustomerLevelType.Default;
-            switch (inputCustomerType)
+            var customerType = Enums.CustomerLevelType.Default;//deklarer en enum av customer type default
+            switch (inputCustomerType)//baserat på user input sätter vi variabel customerType till den valda customerType
             {
                 case "bronze":
                     customerType = Enums.CustomerLevelType.Bronze;
@@ -89,7 +82,7 @@ namespace Labb2F2
                     break;
             }
 
-            Customer customer = new Customer(username, password, new List<Product>(), customerType);
+            Customer customer = new Customer(username, password, new List<Product>(), customerType);//ny instans av customer objekt baserat på user input
             Customer.SaveCustomerToTxt(customer);
 
             Console.WriteLine();
@@ -110,12 +103,15 @@ namespace Labb2F2
             Console.Write("Enter your Password: ");
             string password = Console.ReadLine().ToLower();
 
-            var customers = Customer.GetCustomersFromTxt();
+            var customers = Customer.GetCustomersFromTxt(); //hämtar ut alla customers från text filen
 
             var customer = customers.FirstOrDefault(x => x.Username == username && x.Password == password);
 
-            var checkCustomerExists = customers.Any(x => x.Username == username && x.Password == password);
+            //checkCustomerExists: kollar om kunden finns och användaren har skrivit in rätt användarnamn och lösenord
+            var checkCustomerExists = customers.Any(x => x.Username == username && x.Password == password); 
+            //checkCustomerIncorrectPassword: kollar om användaren skrivit in rätt namn men fel lösenord
             var checkCustomerIncorrectPassword = customers.Any(x => x.Username == username && x.Password != password);
+            //cehckCustomerNotExist: Kollar om kontot finns eller inte
             var checkCustomerNotExists = customer == null;
 
             if (checkCustomerExists)
@@ -158,16 +154,16 @@ namespace Labb2F2
                     Console.WriteLine("*** Sign in page ***");
                     Console.WriteLine("-----------------------------------");
                     Console.WriteLine($"There is no customer registrered with name: {username}. Do you want to register a new customer? [y/n]\n");
-                    Console.Write("\r\nSelect an option: ");
+                    Console.Write("\nSelect an option: ");
 
-                    var responese = Console.ReadKey().Key;
-                    if (responese == ConsoleKey.Y)
+                    var response = Console.ReadLine().ToLower();
+                    if (response == "y")
                     {
                         RegisterNewCustomer();
                         break;
                     }
 
-                    if (responese == ConsoleKey.N)
+                    if (response == "n")
                     {
                         Program.MainMenu();
                         break;
@@ -178,8 +174,7 @@ namespace Labb2F2
 
         public static void StartShopping(Customer customer)
         {
-            bool continueAddProduct = true;
-            while (continueAddProduct)
+            while (true)
             {
                 Console.Clear();
                 Console.WriteLine("-----------------------------------");
@@ -189,7 +184,13 @@ namespace Labb2F2
 
 
                 int counter = 0;
-                List<Product> products = Product.Products;
+                List<Product> products = new List<Product>
+                {
+                    new Product("Apple", 8.0M),
+                    new Product("Banana", 10.0M),
+                    new Product("Pear", 12.0M)
+                };
+
                 foreach (var product in products)
                 {
                     counter++;
@@ -201,7 +202,7 @@ namespace Labb2F2
                 Console.WriteLine("6) Change currency to SEK");
                 Console.WriteLine("7) Change currency to USD");
                 Console.WriteLine("8) Change currency to GBP");
-                Console.Write("\r\nSelect an option: ");
+                Console.Write("\nSelect an option: ");
 
                 string userProductPick = Console.ReadLine();
                 switch (userProductPick)
@@ -211,29 +212,24 @@ namespace Labb2F2
                         Customer.SaveProductToTxt(customer);
                         Console.WriteLine($"{products[0].ProductName} is added to your shopping cart! Press any key to continue shopping");
                         Console.ReadLine();
-                        continueAddProduct = true;
                         break;
                     case "2":
                         customer.Cart.Add(products[1]);
                         Customer.SaveProductToTxt(customer);
                         Console.WriteLine($"{products[1].ProductName} is added to your shopping cart! Press any key to continue shopping");
                         Console.ReadLine();
-                        continueAddProduct = true;
                         break;
                     case "3":
                         customer.Cart.Add(products[2]);
                         Customer.SaveProductToTxt(customer);                       
                         Console.WriteLine($"{products[2].ProductName} is added to your shopping cart! Press any key to continue shopping");
                         Console.ReadLine();
-                        continueAddProduct = true;
                         break;
                     case "4":
                         ShowShoppingCart(customer);
-                        continueAddProduct = false;
                         break;
                     case "5":
                         ShoppingStoreMain(customer);
-                        continueAddProduct = false;
                         break;
                     case "6":
                         Currency = Enums.CurrencyType.SEK;
@@ -244,9 +240,7 @@ namespace Labb2F2
                     case "8":
                         Currency = Enums.CurrencyType.GBP;
                         break;
-                    default:
-                        continueAddProduct = true;
-                        break;
+
                 }
             }
         }
@@ -254,8 +248,7 @@ namespace Labb2F2
         public static void ShowShoppingCart(Customer customer)
         {
 
-            bool continueNaviGate = true;
-            while (continueNaviGate)
+            while (true)
             {
                 Console.Clear();
                 Console.WriteLine("-----------------------------------");
@@ -299,10 +292,6 @@ namespace Labb2F2
                         break;
                     case "4":
                         ShoppingStoreMain(customer);
-                        continueNaviGate = false;
-                        break;
-                    default:
-                        continueNaviGate = true;
                         break;
                 }
             }
@@ -319,7 +308,7 @@ namespace Labb2F2
                 Console.WriteLine("*** Checkout ***");
                 Console.WriteLine("-----------------------------------");
                 Console.WriteLine($"Are you sure want to Checkout? [y/n]\n");
-                Console.Write("\r\nSelect an option: ");
+                Console.Write("\nSelect an option: ");
 
                 var responese = Console.ReadKey().Key;
                 if (responese == ConsoleKey.Y)
@@ -329,13 +318,13 @@ namespace Labb2F2
                     Console.WriteLine("Press any key to Main Menu");
                     Console.ReadKey();
                     var cus = Customer.GetCustomerFromTxt(customer);
-                    ShoppingStoreMenu(cus);
+                    ShoppingStoreMain(cus);
                     break;
                 }
 
                 if (responese == ConsoleKey.N)
                 {
-                    ShoppingStoreMenu(customer);
+                    ShoppingStoreMain(customer);
                     break;
                 }
             }
@@ -347,7 +336,7 @@ namespace Labb2F2
             switch (currency)
             {
                 case Enums.CurrencyType.USD:
-                    cultureInfoString = (price / 8).ToString("C", new CultureInfo("en-US"));
+                    cultureInfoString = (price / 8).ToString("C", new CultureInfo("en-US")); //sätter pris och culturinfo baserat på enums currency type
                     break;
                 case Enums.CurrencyType.GBP:
                     cultureInfoString = (price / 10).ToString("C", new CultureInfo("en-GB"));

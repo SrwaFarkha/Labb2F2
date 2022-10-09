@@ -15,6 +15,7 @@ namespace Labb2F2
         public Enums.CustomerLevelType CustomerLevelType { get; set; }
         public List<Product> Cart { get; set; }
 
+        // Konstruktorn används till att sätta värde på propertis när vi gör en ny instans av klassen
         public Customer(string username, string password, List<Product> cart, Enums.CustomerLevelType customerLevelType)
         {
             Username = username;
@@ -25,23 +26,26 @@ namespace Labb2F2
 
         public static void SaveCustomerToTxt(Customer customer)
         {
-            using FileStream fileStream = File.Open("CustomerDetails.txt", FileMode.Append);
+            using FileStream fileStream = File.Open("CustomerDetails.txt", FileMode.Append); // Om filen inte finns, skapa
             fileStream.Close();
 
-            string json = File.ReadAllText("CustomerDetails.txt");
+            string json = File.ReadAllText("CustomerDetails.txt"); // läser filen
 
-            if (json == "")
+            if (json == "")// om json(textfilen) är tom 
             {
+                //skapa en ny lista av customer
                 List<Customer> customerJson = new List<Customer>();
-                customerJson.Add(new Customer(customer.Username, customer.Password, customer.Cart, customer.CustomerLevelType));
+                //lägger till en customer i listan
+                customerJson.Add(customer);
+                //konverta listan till json objekt
                 var convertedJson = JsonConvert.SerializeObject(customerJson, Formatting.Indented);
-
+                //sparar json objekt till text filen
                 System.IO.File.WriteAllText("CustomerDetails.txt", convertedJson);
             }
             else if (json != "")
             {
                 var customerJson = JsonConvert.DeserializeObject<List<Customer>>(json);
-                customerJson?.Add(new Customer(customer.Username, customer.Password, customer.Cart, customer.CustomerLevelType));
+                customerJson.Add(customer);
                 var convertedJson = JsonConvert.SerializeObject(customerJson, Formatting.Indented);
 
                 System.IO.File.WriteAllText("CustomerDetails.txt", convertedJson);
@@ -74,15 +78,15 @@ namespace Labb2F2
             System.IO.File.WriteAllText("CustomerDetails.txt", convertedJson);
         }
 
-        public static List<Customer> GetCustomersFromTxt()
+        public static List<Customer> GetCustomersFromTxt()//retunerar en lista av customers
         {
             var json = File.ReadAllText("CustomerDetails.txt");
-            var customerJson = JsonConvert.DeserializeObject<List<Customer>>(json);
+            var customers = JsonConvert.DeserializeObject<List<Customer>>(json);
 
-            return customerJson;
+            return customers;
         }
 
-        public static Customer GetCustomerFromTxt(Customer customer)
+        public static Customer GetCustomerFromTxt(Customer customer)// retunerar en customer beroende på username som skickas in i metoden 
         {
             var json = File.ReadAllText("CustomerDetails.txt");
             var customerJson = JsonConvert.DeserializeObject<List<Customer>>(json);

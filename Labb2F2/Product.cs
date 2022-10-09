@@ -12,12 +12,6 @@ namespace Labb2F2
         public string ProductName { get; set; }
         public decimal Price { get; set; }
 
-        public static List<Product> Products { get; set; } = new List<Product>
-        {
-            new Product("Apple", 8.0M),
-            new Product("Banana", 10.0M),
-            new Product("Pear", 12.0M)
-        };
 
         public Product(string productName, decimal price)
         {

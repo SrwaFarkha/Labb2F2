@@ -2,15 +2,14 @@
 
 public class Program
 {
-    static void Main(string[] args)
+    static void Main(string[] args)//anropar main metoden. Start punkten på applikationen
     {
         MainMenu();
     }
 
     public static void MainMenu()
     {
-        bool showMenu = true;
-        while (showMenu)
+        while (true)
         {
             Console.Clear();
             Console.WriteLine("-----------------------------------");
@@ -19,17 +18,15 @@ public class Program
             Console.WriteLine("1) Register a new customer");
             Console.WriteLine("2) Sign in");
             Console.WriteLine("3) Exit");
-            Console.Write("\r\nSelect an option: ");
+            Console.Write("\nSelect an option: ");
 
-            switch (Console.ReadLine())
+            switch (Console.ReadLine())//switch kollar av user input. Beroende på vad användaren väljer så navigeras den till olika classers metoder
             {
                 case "1":
                     ShoppingStore.RegisterNewCustomer();
-                    showMenu = false;
                     break;
                 case "2":
                     ShoppingStore.SignIn();
-                    showMenu = false;
                     break;
                 case "3":
                     Environment.Exit(0);
