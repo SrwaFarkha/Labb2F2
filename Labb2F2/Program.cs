@@ -1,9 +1,16 @@
 ﻿using Labb2F2;
+using Newtonsoft.Json;
 
 public class Program
 {
     static void Main(string[] args)//anropar main metoden. Start punkten på applikationen
     {
+        var customer = Customer.GetCustomersFromTxt();
+        if (customer == null)
+        {
+            Customer.PopulateCustomers();
+        }
+        
         MainMenu();
     }
 

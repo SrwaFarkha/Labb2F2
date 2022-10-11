@@ -15,6 +15,7 @@ namespace Labb2F2
         public Enums.CustomerLevelType CustomerLevelType { get; set; }
         public List<Product> Cart { get; set; }
 
+
         // Konstruktorn används till att sätta värde på propertis när vi gör en ny instans av klassen
         public Customer(string username, string password, List<Product> cart, Enums.CustomerLevelType customerLevelType)
         {
@@ -37,6 +38,7 @@ namespace Labb2F2
                 List<Customer> customerJson = new List<Customer>();
                 //lägger till en customer i listan
                 customerJson.Add(customer);
+
                 //konverta listan till json objekt
                 var convertedJson = JsonConvert.SerializeObject(customerJson, Formatting.Indented);
                 //sparar json objekt till text filen
@@ -80,7 +82,11 @@ namespace Labb2F2
 
         public static List<Customer> GetCustomersFromTxt()//retunerar en lista av customers
         {
+            using FileStream fileStream = File.Open("CustomerDetails.txt", FileMode.Append); // Om filen inte finns, skapa
+            fileStream.Close();
+
             var json = File.ReadAllText("CustomerDetails.txt");
+
             var customers = JsonConvert.DeserializeObject<List<Customer>>(json);
 
             return customers;
@@ -93,6 +99,32 @@ namespace Labb2F2
             var cus = customerJson.FirstOrDefault(x => x.Username == customer.Username);
             
             return cus;
+        }
+
+        public static void PopulateCustomers()
+        {
+            List<Customer> customerList = new List<Customer> //Fördefinerade kunder
+            {
+                new Customer("knatte", "123", new List<Product>(), Enums.CustomerLevelType.Gold),
+                new Customer("fnatte", "321", new List<Product>(), Enums.CustomerLevelType.Silver),
+                new Customer("tjatte", "213", new List<Product>(), Enums.CustomerLevelType.Bronze)
+            };
+            using FileStream fileStream = File.Open("CustomerDetails.txt", FileMode.Append);
+            fileStream.Close();
+
+            string json = File.ReadAllText("CustomerDetails.txt");
+
+            if (json == "")
+            {
+                List<Customer> customerJson = new List<Customer>();
+                foreach (var customer in customerList)
+                {
+                    customerJson.Add((customer));
+                }
+
+                var convertedJson = JsonConvert.SerializeObject(customerJson, Formatting.Indented);
+                System.IO.File.WriteAllText("CustomerDetails.txt", convertedJson);
+            }
         }
 
         public override string ToString()
