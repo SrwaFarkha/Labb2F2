@@ -25,6 +25,86 @@ namespace Labb2F2
             CustomerLevelType = customerLevelType;
         }
 
+        public static void SignIn()
+        {
+            Console.Clear();
+            Console.WriteLine("-----------------------------------");
+            Console.WriteLine("*** Sign in page ***");
+            Console.WriteLine("-----------------------------------");
+            Console.Write("Enter your Username: ");
+            string username = Console.ReadLine().ToLower();
+            Console.Write("Enter your Password: ");
+            string password = Console.ReadLine().ToLower();
+
+            var customers = GetCustomersFromTxt(); //hämtar ut alla customers från text filen
+
+            var customer = customers.FirstOrDefault(x => x.Username == username && x.Password == password);
+
+            //checkCustomerExists: kollar om kunden finns och användaren har skrivit in rätt användarnamn och lösenord
+            var checkCustomerExists = customers.Any(x => x.Username == username && x.Password == password);
+            //checkCustomerIncorrectPassword: kollar om användaren skrivit in rätt namn men fel lösenord
+            var checkCustomerIncorrectPassword = customers.Any(x => x.Username == username && x.Password != password);
+            //cehckCustomerNotExist: Kollar om kontot finns eller inte
+            var checkCustomerNotExists = customer == null;
+
+            if (checkCustomerExists)
+            {
+                ShoppingStore.ShoppingStoreMain(customer);
+            }
+
+            if (checkCustomerIncorrectPassword)
+            {
+                while (true)
+                {
+                    Console.Clear();
+                    Console.WriteLine("-----------------------------------");
+                    Console.WriteLine("*** Sign in page ***");
+                    Console.WriteLine("-----------------------------------");
+                    Console.WriteLine("\nIncorrect Password. Do you want to Try Again? [y/n]\n");
+                    Console.Write("\nSelect an option: ");
+
+                    var responese = Console.ReadKey().Key;
+                    if (responese == ConsoleKey.Y)
+                    {
+                        SignIn();
+                        break;
+                    }
+
+                    if (responese == ConsoleKey.N)
+                    {
+                        Program.MainMenu();
+                        break;
+                    }
+                }
+            }
+
+            if (checkCustomerNotExists)
+            {
+                while (true)
+                {
+                    Console.Clear();
+                    Console.WriteLine("-----------------------------------");
+                    Console.WriteLine("*** Sign in page ***");
+                    Console.WriteLine("-----------------------------------");
+                    Console.WriteLine($"There is no customer registrered with name: {username}. Do you want to register a new customer? [y/n]\n");
+                    Console.Write("\nSelect an option: ");
+
+                    var response = Console.ReadLine().ToLower();
+                    if (response == "y")
+                    {
+                        ShoppingStore.RegisterNewCustomer();
+                        break;
+                    }
+
+                    if (response == "n")
+                    {
+                        Program.MainMenu();
+                        break;
+                    }
+                }
+            }
+        }
+
         public static void SaveCustomerToTxt(Customer customer)
         {
             using FileStream fileStream = File.Open("CustomerDetails.txt", FileMode.Append); // Om filen inte finns, skapa

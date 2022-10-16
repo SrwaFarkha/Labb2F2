@@ -33,7 +33,7 @@ public class Program
                     ShoppingStore.RegisterNewCustomer();
                     break;
                 case "2":
-                    ShoppingStore.SignIn();
+                    Customer.SignIn();
                     break;
                 case "3":
                     Environment.Exit(0);
